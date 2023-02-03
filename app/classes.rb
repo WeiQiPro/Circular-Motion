@@ -15,10 +15,9 @@ class Particle
     @distance = rand(120) + 50
     @radians = rand() * Math::PI * 2
 
-
+    @rgb = {red: 0, green: 0, blue: 0}
     @trail = []
     @shape = SHAPES[0]
-    @rgb = {red: 0, green: 0, blue: 0}
     @location = { type: :self, x: nil, y: nil }
     @color = @theme == :cool ? COLORS.cool[rand(3)] : COLORS.warm[rand(3)]
 
@@ -40,7 +39,7 @@ class Particle
     speed(args)
     colors(args)
     sprite(args)
-    position(args)
+    positions(args)
     variables(args)
   end
 
@@ -51,8 +50,6 @@ class Particle
       elsif args.inputs.keyboard.down
         @radius += -3
       end
-    else @radius != 1
-      @radius = 1
     end
   end
 
@@ -98,15 +95,15 @@ class Particle
     if args.inputs.keyboard.key_down.c
       @theme = @theme == :cool ? :warm : :cool
       @color = @theme == :cool ? COLORS.cool[rand(3)] : COLORS.warm[rand(3)]
-      coloring(args)
     end
+    coloring()
   end
 
   def sprite(args)
     @path = "sprites/#{@shapes}/#{@color}.png"
   end
 
-  def position(args)
+  def positions(args)
     if args.inputs.keyboard.key_down.b
       current_index = LOCATIONS.index(@location.type)
       next_index = (current_index + 1) % LOCATIONS.length
@@ -144,12 +141,15 @@ class Particle
       @trail.delete_at(0)
     end
 
-    @display = {x: @x, y: @y}
+    @display = {
+      x: args.inputs.mouse.x + Math.cos(@radians) * @distance,
+      y: args.inputs.mouse.y + Math.sin(@radians) * @distance
+    }
     @trail << @display
     @trail = @trail[0..30]
   end
 
-  def coloring(args)
+  def coloring()
     case @color
     when "indigo"
       @rgb.red, @rgb.green, @rgb.blue = [75, 0, 130]
@@ -185,8 +185,8 @@ class Particle
   def draw_lines(args)
     if @location.type == :self
       @trail.each_with_index do |current, index|
-        follow = @trail[(index + 1) % @trail.length]
-        args.outputs.lines << {x: current[:x], y: current[:y], x2: follow[:x], y2: follow[:y], path: :pixel, a: (80 * index) / @trail.length, r: @rgb.red, g: @rgb.green, b: @rgb.blue}
+        next_position = @trail[-(index + 2)] || @display
+        args.outputs.lines << {x: next_position[:x], y: next_position[:y], x2: current[:x], y2: current[:y], a: (80 * index) / @trail.length, r: @rgb[:red], g: @rgb[:green], b: @rgb[:blue]}
       end
     else
       @trail.each_with_index do |current, index|
@@ -194,7 +194,7 @@ class Particle
       end
     end
 
-    args.outputs.sprites << {x: @x, y: @y, w: @radius, h: @radius, path: :pixel, r: @rgb.red, g:@rgb.green, b: @rgb.blue}
+    args.outputs.sprites << {x: @x, y: @y, w: 1, h: 1, path: :pixel, r: @rgb.red, g:@rgb.green, b: @rgb.blue}
   end
 
 end

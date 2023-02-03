@@ -4,7 +4,7 @@ require "app/render.rb"
 require "app/tick.rb"
 
 def init(args)
-  # args.gtk.hide_cursor
+  args.gtk.hide_cursor
   args.state.rotation ||= 0
   create_particles(args)
   create_labels(args)
@@ -30,7 +30,7 @@ def create_labels(args)
     {x: 10, y: 700, text: "Size: up or down",              r: 255, g: 255, b: 255},
     {x: 10, y: 680, text: "Distance: left or right",       r: 255, g: 255, b: 255},
     {x: 10, y: 660, text: "Speed: left mouse",             r: 255, g: 255, b: 255},
-    {x: 10, y: 640, text: "Revese: right mouse",           r: 255, g: 255, b: 255},
+    {x: 10, y: 640, text: "Reverse: right mouse",          r: 255, g: 255, b: 255},
     {x: 10, y: 620, text: "Shape: press v",                r: 255, g: 255, b: 255},
     {x: 10, y: 600, text: "Position: press b (for lines)", r: 255, g: 255, b: 255},
     {x: 10, y: 580, text: "Color: press c",                r: 255, g: 255, b: 255},
